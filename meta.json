@@ -1,0 +1,12 @@
+{
+  "name": "Compress artifacts",
+  "summary": "Packs the files a build produced into one deterministic zip.",
+  "author": "hummerstudio",
+  "license": "MIT",
+  "tags": [
+    "official-port",
+    "artifacts",
+    "archive"
+  ],
+  "homepage": "https://github.com/hummerstudio/jenkins-atom-compress-artifacts"
+}

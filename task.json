@@ -1,0 +1,66 @@
+{
+  "atomCode": "compress-artifacts",
+  "name": "Compress artifacts",
+  "version": "1.0.0",
+  "description": "Packs the files a build produced into one deterministic zip.",
+  "execution": {
+    "packagePath": "compress-artifacts.jar",
+    "language": "java",
+    "target": "$atom_java_path -cp compress-artifacts.jar com.jenkinschina.atom.sdk.AtomRunner"
+  },
+  "input": {
+    "patterns": {
+      "label": "要打包的文件（逗号分隔的 glob）",
+      "type": "vuex-input",
+      "default": "**/*"
+    },
+    "outputFile": {
+      "label": "输出文件名",
+      "type": "vuex-input",
+      "default": "artifacts.zip"
+    },
+    "baseDir": {
+      "label": "相对目录（默认 workspace）",
+      "type": "vuex-input",
+      "default": ""
+    },
+    "exclude": {
+      "label": "排除（逗号分隔的 glob）",
+      "type": "vuex-input",
+      "default": ""
+    },
+    "deleteSource": {
+      "label": "打包后删除源文件",
+      "type": "checkbox",
+      "default": "false"
+    }
+  },
+  "output": {
+    "filesAdded": {
+      "type": "string",
+      "description": "打进包的文件数"
+    },
+    "rawBytes": {
+      "type": "string",
+      "description": "原始字节数"
+    },
+    "archiveBytes": {
+      "type": "string",
+      "description": "压缩后字节数"
+    },
+    "ratio": {
+      "type": "string",
+      "description": "压缩后占原始的百分比"
+    },
+    "outputFile": {
+      "type": "string",
+      "description": "输出文件"
+    }
+  },
+  "x-jenkins": {
+    "protocol": "jenkins-1",
+    "requires": {
+      "runner": ">=0.4.0"
+    }
+  }
+}
