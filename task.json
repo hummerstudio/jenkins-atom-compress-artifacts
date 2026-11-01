@@ -1,7 +1,7 @@
 {
   "atomCode": "compress-artifacts",
   "name": "Compress artifacts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Packs the files a build produced into one deterministic zip.",
   "execution": {
     "packagePath": "compress-artifacts.jar",
@@ -55,6 +55,10 @@
     "outputFile": {
       "type": "string",
       "description": "输出文件"
+    },
+    "archiveFile": {
+      "type": "artifact",
+      "description": "打包出的 zip（会被归档）"
     }
   },
   "x-jenkins": {

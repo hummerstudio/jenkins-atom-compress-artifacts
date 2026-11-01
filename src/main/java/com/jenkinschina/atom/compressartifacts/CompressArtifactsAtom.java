@@ -74,6 +74,8 @@ public class CompressArtifactsAtom implements AtomTask {
         }
 
         return AtomResult.success()
+                // declare the archive as an artifact, or the build page shows a file nobody can download
+                .artifact("archiveFile", output)
                 .data("filesAdded", String.valueOf(files.size()))
                 .data("rawBytes", String.valueOf(rawBytes))
                 .data("archiveBytes", String.valueOf(zipBytes))
