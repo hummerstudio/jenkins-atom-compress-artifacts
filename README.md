@@ -10,5 +10,5 @@ compress-artifacts 插件存在的理由很实际：成千上万个小文件归�
 `deleteSource=true` 时打包后删源文件（适合归档后腾空间），日志会写明删了几个。
 
 ```bash
-./build.sh && ./tools/smoke.sh
+mvn verify
 ```
