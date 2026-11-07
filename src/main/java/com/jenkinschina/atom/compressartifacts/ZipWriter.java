@@ -6,9 +6,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
@@ -52,7 +56,7 @@ final class ZipWriter implements Closeable {
         long offset = written;
 
         CRC32 crc = new CRC32();
-        Path compressed = Files.createTempFile("atom-zip-", ".part");
+        Path compressed = createOwnerOnlyTempFile("atom-zip-", ".part");
         try {
             long uncompressedSize = deflate(file, compressed, crc);
             long compressedSize = Files.size(compressed);
@@ -161,6 +165,19 @@ final class ZipWriter implements Closeable {
         return size;
     }
 
+    /**
+     * A scratch file nobody else can read: 0600 is asked for at creation, so there is no moment where the entry's
+     * contents are readable by another user on the box. A filesystem without POSIX modes has no group/world bit to
+     * drop, so the attribute is simply left off there.
+     */
+    private static Path createOwnerOnlyTempFile(String prefix, String suffix) throws IOException {
+        if (FileSystems.getDefault().supportedFileAttributeViews().contains("posix")) {
+            return Files.createTempFile(prefix, suffix,
+                    PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------")));
+        }
+        return Files.createTempFile(prefix, suffix, new FileAttribute<?>[0]);
+    }
+
     private static void putInt(ByteArrayOutputStream target, int value) {
         target.write(value & 0xff);
         target.write((value >> 8) & 0xff);
@@ -173,5 +190,33 @@ final class ZipWriter implements Closeable {
         target.write((value >> 8) & 0xff);
     }
 
-    private record Record(byte[] name, int crc, int compressedSize, int uncompressedSize, long offset) {}
+    private record Record(byte[] name, int crc, int compressedSize, int uncompressedSize, long offset) {
+        @Override
+        public boolean equals(Object other) {
+            if (this == other) {
+                return true;
+            }
+            return other instanceof Record record
+                    && crc == record.crc
+                    && compressedSize == record.compressedSize
+                    && uncompressedSize == record.uncompressedSize
+                    && offset == record.offset
+                    && Arrays.equals(name, record.name);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Arrays.hashCode(name);
+            result = 31 * result + Integer.hashCode(crc);
+            result = 31 * result + Integer.hashCode(compressedSize);
+            result = 31 * result + Integer.hashCode(uncompressedSize);
+            return 31 * result + Long.hashCode(offset);
+        }
+
+        @Override
+        public String toString() {
+            return "Record[name=" + Arrays.toString(name) + ", crc=" + crc + ", compressedSize=" + compressedSize
+                    + ", uncompressedSize=" + uncompressedSize + ", offset=" + offset + "]";
+        }
+    }
 }
