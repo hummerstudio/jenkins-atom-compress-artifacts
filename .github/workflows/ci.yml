@@ -37,4 +37,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: compress-artifacts-atom
-          path: atom/dist/compress-artifacts/
+          path: atom/target/dist/compress-artifacts/
