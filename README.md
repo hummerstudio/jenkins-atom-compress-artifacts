@@ -1,14 +1,14 @@
-# jenkins-atom-compress-artifacts
+# Merged into `atom-basic-steps`
 
-把构建产物打成**一个确定性的 zip**。
+通用、与任何外部产品无关的文件动作应该像 Jenkins 的 Pipeline Basic Steps 一样集中在一个原子里，
+而不是一个动作一个仓库。
 
-compress-artifacts 插件存在的理由很实际：成千上万个小文件归档慢、拷贝也慢。这个原子额外保证两件事：
-
-- **条目按路径排序**，时间戳固定为 1970 → 同样的输入产生同样的字节，两次构建的包可以直接比对，不会因为 mtime 不同而每次都显示变化
-- **不会把输出文件打进自己**（递归打包的经典陷阱）
-
-`deleteSource=true` 时打包后删源文件（适合归档后腾空间），日志会写明删了几个。
-
-```bash
-mvn verify
+```groovy
+// 旧
+runAtom(atom: 'compress-artifacts', version: '1.latest', inputs: [...])
+// 新
+runAtom(atom: 'atom-basic-steps', version: '1.1.0', inputs: [action: 'compress', ...])
 ```
+
+输入名与错误码保持不变（`archive` / `includes` / `excludes` / `target` / `baseDir` / `patterns` / `outputFile` / `deleteSource`）。
+本仓库只读保留，便于历史构建追溯。
